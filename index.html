@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dixit-Style Card Drawer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #333;
+      text-align: center;
+    }
+
+    .card-container {
+      width: 100%;
+      max-width: 600px;
+      height: 800px; /* taller frame for portrait images */
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain; /* show full image */
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #4f46e5;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    @media (max-width: 600px) {
+      .card-container {
+        height: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Mirror Mirror on the Wall</h1>
+  <div class="card-container">
+    <img id="cardImage" src="" alt="Dixit card" />
+  </div>
+  <button onclick="drawCard()">Draw New Card</button>
+
+  <script>
+    const images = [
+      'https://i.pinimg.com/1200x/d7/65/ee/d765ee24310f071dd7d98c99ac88531d.jpg',
+      'https://i.pinimg.com/1200x/a7/77/e4/a777e438c062e48844f82c114e617bfe.jpg',
+      'https://i.pinimg.com/736x/6b/66/40/6b664049b9fa220d9ab09f8e348f524e.jpg',
+      'https://i.pinimg.com/736x/ba/06/60/ba06607e7cab0a7e94a90634c0974d70.jpg',
+	'https://i.pinimg.com/736x/6c/6d/65/6c6d6543d8a2093c9dcea8139cc11184.jpg',
+	'https://i.pinimg.com/1200x/d0/7f/58/d07f583e06015d22297bf5529913e4c6.jpg',
+	'https://i.pinimg.com/736x/86/ac/bb/86acbb3a0ab2834360fd2593d434a863.jpg',
+	'https://i.pinimg.com/1200x/b6/75/3a/b6753a33a2840727fd2e851156906818.jpg',
+	'https://i.pinimg.com/1200x/ae/62/86/ae6286b5e059df3580e6c6efc30ed302.jpg',
+	'https://i.pinimg.com/1200x/10/9b/8d/109b8df347d122842e8817a6365e7830.jpg',
+	'https://i.pinimg.com/1200x/52/9f/8c/529f8cac9b69e16a5e243e52b2eff0f9.jpg',
+	'https://i.pinimg.com/1200x/2f/33/0b/2f330bda5ca62dfe62091d525aa27982.jpg',
+	'https://i.pinimg.com/1200x/2e/dd/10/2edd10e7f4189bb3f92ac13ffcfbe068.jpg',
+	'https://i.pinimg.com/736x/ab/5c/17/ab5c172025e2419b39adce51bfd07568.jpg',
+	'https://i.pinimg.com/1200x/fc/30/b6/fc30b6f80a2e36db1a7633defc72e5ff.jpg',
+	'https://i.pinimg.com/1200x/50/38/65/503865293b36d44fbe56223df04c1105.jpg',
+	'https://i.pinimg.com/736x/b5/38/c7/b538c767e17312df7cf26e0560eb7cec.jpg',
+	'https://i.pinimg.com/736x/f4/7d/93/f47d93a20faf94beb5ef4c1fe901f765.jpg',
+	'https://i.pinimg.com/736x/cb/dd/c7/cbddc7ad3f9e699eedced22077d77240.jpg',
+	'https://i.pinimg.com/1200x/d3/49/10/d34910cb6ab2f135e073fc751b7d469b.jpg',
+	'https://i.pinimg.com/1200x/11/d0/21/11d0218128eae841f883810bb379cc48.jpg',
+	'https://i.pinimg.com/1200x/8d/7c/63/8d7c63bb581af7c06308da20ad0b358c.jpg',
+	'https://i.pinimg.com/1200x/92/99/bf/9299bf279177a2ecf0dcf8af1b50f681.jpg',
+	'https://i.pinimg.com/1200x/94/e8/25/94e82548f67936eb636dc38ccd43446d.jpg',
+	'https://i.pinimg.com/736x/55/c4/bc/55c4bc6b049da3bbf1f6bed038f61e75.jpg',
+	'https://i.pinimg.com/736x/2e/0d/9d/2e0d9d0339eedcf4e15ae1d43f42a1dd.jpg',
+	'https://i.pinimg.com/1200x/fc/8b/ee/fc8bee786ed087fd01da08ccf53a3bc1.jpg',
+	'https://i.pinimg.com/736x/cb/7d/11/cb7d11472a0f724fc6941d2d5f300ae3.jpg',
+	'https://i.pinimg.com/1200x/6b/19/c9/6b19c9ec6b16b621283ef63a1cb299da.jpg',
+	'https://i.pinimg.com/736x/e9/49/c1/e949c1d10eb788596b4406a78dfe8e32.jpg',
+	'https://i.pinimg.com/1200x/62/20/53/62205387ddd7c4a636886b3095b24d28.jpg',
+	'https://i.pinimg.com/736x/61/a4/35/61a435fcbfcaea752cddd0baeda7fd79.jpg',
+	'https://i.pinimg.com/1200x/e1/5a/60/e15a606bdf16eafb83c88cd9ed257e70.jpg',
+	'https://i.pinimg.com/1200x/8f/94/4f/8f944ff17378fe0d7da5e1251b12ae3b.jpg',
+	'https://i.pinimg.com/736x/1c/36/64/1c3664bc27c925a5aef8781def2fac9b.jpg',
+	'https://i.pinimg.com/1200x/d8/56/49/d85649bc66492f3ea926948753b8ec70.jpg',
+	'https://i.pinimg.com/1200x/43/68/25/436825bbabfc59d21e715a57b90a534f.jpg',
+	'https://i.pinimg.com/736x/24/00/4d/24004d832ae02940fac25fa1dedce937.jpg',
+	'https://i.pinimg.com/736x/83/fa/6d/83fa6d83a0be8ea07862147f8208cdbb.jpg',
+	'https://i.pinimg.com/1200x/59/a5/18/59a5187512bc283f7af3dfb8405d066d.jpg',
+	'https://i.pinimg.com/1200x/f7/38/7a/f7387ab22215160179f4bccf3ea54874.jpg',
+	'https://i.pinimg.com/1200x/a6/e1/3f/a6e13fae642f4b2f8fcc2649f6a73442.jpg',
+	'https://i.pinimg.com/736x/77/5a/b3/775ab310fa1bac4880ab71fd6a63127e.jpg',
+	'https://i.pinimg.com/1200x/fe/a2/74/fea27466a5d0bf7289dbb20a15355a2f.jpg',
+	'https://i.pinimg.com/1200x/ca/94/0e/ca940e12c15d151d42b5901da01f2feb.jpg',
+	'https://i.pinimg.com/736x/f0/1a/a8/f01aa84ed530b1828ba82b633eb86d1c.jpg',
+	'https://i.pinimg.com/1200x/96/8e/23/968e2354e7abe50e665462b8d8a6a372.jpg',
+	'https://i.pinimg.com/736x/99/7a/b4/997ab4e85e538bf668eabcf52b2c5669.jpg',
+	'https://i.pinimg.com/736x/a5/f4/55/a5f455e956b370ef9a99621c5995252c.jpg',
+	'https://i.pinimg.com/736x/94/12/ca/9412ca271f960d2490bec383156bb49c.jpg',
+	'https://i.pinimg.com/1200x/d9/ed/11/d9ed1137024cdc28f3f723689e695471.jpg',
+	'https://i.pinimg.com/736x/ad/00/f3/ad00f3fdc23a3b565acd63929b1347cc.jpg',
+	'https://i.pinimg.com/736x/71/e3/7b/71e37b0ca3324cba982dfad59e306a6f.jpg',
+	'https://i.pinimg.com/736x/01/37/37/01373785ce73e55110881d0e3ceb64c8.jpg',
+	'https://i.pinimg.com/1200x/33/d9/fe/33d9fe7536ae217b89bdbeb2af15480d.jpg',
+	'https://i.pinimg.com/1200x/18/3b/cf/183bcf9b3196741feb5897d6b13fe7f4.jpg',
+	'https://i.pinimg.com/1200x/47/ba/3c/47ba3c62dd80c3ac09e62f8e591e2e4c.jpg',
+	'https://i.pinimg.com/736x/5f/ad/d2/5fadd2dd83bbb811909405e10311c763.jpg',
+	'https://i.pinimg.com/736x/85/c3/71/85c3710222842ad24ccb3b2c5b6a8e3d.jpg',
+	'https://i.pinimg.com/736x/03/c4/1d/03c41d536edf939247a2ef85f1cba10d.jpg',
+	'https://i.pinimg.com/736x/d0/92/10/d09210896f4fd6f2137b2cf8cb280721.jpg',
+	'https://i.pinimg.com/1200x/08/5e/fa/085efafd28efe87e26dc0a03415dfd97.jpg',
+	'https://i.pinimg.com/736x/7e/db/04/7edb046dbd6aa6a9e99c13e0d89dc3bb.jpg',
+	'https://i.pinimg.com/1200x/c9/2d/c0/c92dc0c1d483689550afa42785cbdb08.jpg',
+	'https://i.pinimg.com/736x/8a/4c/56/8a4c56d8ea07b79728c6e75e4f775f9f.jpg',
+	'https://i.pinimg.com/736x/a6/4a/c7/a64ac7cc04a0417999eee0e519b40122.jpg',
+	'https://i.pinimg.com/1200x/a9/1b/a2/a91ba2b3407854527af84d8376a95ac5.jpg',
+	'https://i.pinimg.com/736x/fe/5e/2b/fe5e2b80ac6aff412bd20afe000aad5a.jpg',
+	'https://i.pinimg.com/736x/1a/01/ec/1a01ec7ccdb7067a78e0e93225064edf.jpg',
+	'https://i.pinimg.com/736x/8b/34/97/8b34979939d9c9030bdd0f2737c3b10a.jpg',
+	'https://i.pinimg.com/736x/2b/f1/aa/2bf1aa3bd1d3321da5a5fc105d52eb63.jpg',
+	'https://i.pinimg.com/736x/50/44/9a/50449a076def102c6b68c24ce19796c4.jpg',
+	'https://i.pinimg.com/1200x/6c/fa/bf/6cfabf9707b21637e202ebcd96624942.jpg',
+	'https://i.pinimg.com/1200x/d2/a8/8d/d2a88db5a14eb4e43b3f02c734204a70.jpg',
+	'https://i.pinimg.com/736x/13/f6/73/13f673ac804eb2218151b6338f3b1646.jpg',
+	'https://i.pinimg.com/736x/80/e8/26/80e82627bce20db88758592c0a713169.jpg',
+	'https://i.pinimg.com/736x/d2/5d/e9/d25de9db3e97139c77a004f2d8038430.jpg',
+	'https://i.pinimg.com/1200x/05/c3/ce/05c3ceb793e5c50e3b4686bb3be6d7c0.jpg',
+	'https://i.pinimg.com/1200x/25/0f/c4/250fc4df84af98fa6a3425a3ff85f12d.jpg',
+	'https://i.pinimg.com/1200x/de/b4/c0/deb4c000be68a82dbc9e0e6046c1d1d0.jpg',
+	'https://i.pinimg.com/1200x/60/45/41/60454151e10565db357383102b4b4ede.jpg',
+	'https://i.pinimg.com/736x/72/0e/8e/720e8e2df0e60266c25c197b1c12144c.jpg',
+	'https://i.pinimg.com/1200x/0a/0a/12/0a0a12e65031dea322478671dbb7eb49.jpg',
+	'https://i.pinimg.com/1200x/c2/c9/e6/c2c9e66bd5cb28ecfe79059552dc4892.jpg',
+	'https://i.pinimg.com/736x/d7/fe/f0/d7fef0bdb3cd5f1813ff5b32e4579ec6.jpg',
+	'https://i.pinimg.com/736x/f6/4e/fe/f64efec941ce428d2c0ec37d5ca47cc5.jpg',
+	'https://i.pinimg.com/736x/9e/73/3f/9e733f8dcd7629cc757244f3f960a714.jpg',
+	'https://i.pinimg.com/736x/ce/5d/cd/ce5dcd1ab36f19a1eec0c32aae37e3de.jpg',
+	'https://i.pinimg.com/736x/7c/1f/f5/7c1ff56ecc3487dc7eadb219bdcad356.jpg',
+	'https://i.pinimg.com/736x/77/98/eb/7798ebc2ca35d88c4c38068deef949fc.jpg',
+	'https://i.pinimg.com/736x/4d/82/10/4d8210080097e0270cd156b70e6819e7.jpg',
+	'https://i.pinimg.com/736x/22/db/0b/22db0b76597cbb7037bde24a8263199c.jpg',
+	'https://i.pinimg.com/736x/64/10/96/641096fb0f08dadaf701b082d8f97033.jpg',
+	'https://i.pinimg.com/736x/43/96/93/4396932e60547eb550d39c5f476875bd.jpg',
+	'https://i.pinimg.com/1200x/c4/3a/01/c43a01ab916df8e438aa4c54a96bad51.jpg',
+	'https://i.pinimg.com/1200x/80/fe/c9/80fec9097b50c4e30c32cefbd498e494.jpg',
+	'https://i.pinimg.com/1200x/5c/dd/e3/5cdde3b051fadb7062ba24c61553e896.jpg',
+	'https://i.pinimg.com/1200x/79/8c/fa/798cfab4320b6cfa176d383be86c3b22.jpg',
+	'https://i.pinimg.com/1200x/b2/f0/53/b2f05321a872007587d7e8628f55d5f9.jpg',
+	'https://i.pinimg.com/1200x/e4/54/77/e45477bf67bf230b293cbf05cc9ac3a0.jpg',
+	'https://i.pinimg.com/1200x/00/5c/dd/005cddfc7e0d2d471821d9b43c24c99a.jpg',
+	'https://i.pinimg.com/1200x/07/2d/87/072d877c8a6c81447ae26f4bd4bfef4a.jpg',
+	'https://i.pinimg.com/736x/49/d2/c0/49d2c00506271d3fe4f6cea2f36b5640.jpg',
+	'https://i.pinimg.com/736x/0d/4e/cc/0d4ecc0651a785485cb6bc3455aee437.jpg',
+	'https://i.pinimg.com/736x/5f/35/ae/5f35aed3dac96ffa1c09e60edc928805.jpg',
+	'https://i.pinimg.com/736x/27/23/46/2723462c4ec9e583d9acf6394731d7f6.jpg',
+	'https://i.pinimg.com/1200x/d0/89/e2/d089e27e137bcd05595eeb6d0932145b.jpg',
+	'https://i.pinimg.com/1200x/75/fa/8a/75fa8a16b89171b244673192bffa1181.jpg',
+	'https://i.pinimg.com/1200x/14/f0/59/14f059af00029b8795a94c152ba982ac.jpg',
+	'https://i.pinimg.com/736x/c4/d6/37/c4d6379e20f9b5f06b02c6f1fdec15b5.jpg',
+	'https://i.pinimg.com/736x/56/9a/56/569a563ac17ab350c15339890882f4fc.jpg',
+	'https://i.pinimg.com/736x/32/29/74/3229744c1accdccce0d7d390bab92877.jpg',
+	'https://i.pinimg.com/1200x/21/9e/3b/219e3b74724dbcd148a445f9310e5b06.jpg'
+    ];
+
+    function drawCard() {
+      const randomIndex = Math.floor(Math.random() * images.length);
+      document.getElementById('cardImage').src = images[randomIndex];
+    }
+
+    window.onload = drawCard;
+  </script>
+</body>
+</html>
